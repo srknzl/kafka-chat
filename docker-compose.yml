@@ -1,0 +1,112 @@
+version: "3"
+services:
+  server:
+    init: true
+    build: .
+    hostname: server
+    ports:
+      - 3000:3000
+    environment:
+      WS_PORT: 3000
+      PYTHONUNBUFFERED: 1
+      KAFKA_BROKERS: kafka1:19093 # The broker addresses for the producer to connect to
+      KAFKA_TOPIC: chat # The server will start with this topic for reading
+    volumes:
+      - .:/opt
+    networks:
+      - kafka-chat
+
+  frontend:
+    init: true
+    build: frontend
+    hostname: frontend
+    ports:
+      - 8080:8080
+    depends_on:
+      - server
+
+  #  kafka-ui:
+  #    image: landoop/kafka-topics-ui:0.9.4
+  #    hostname: kafka-ui
+  #    container_name: kafka-ui
+  #    depends_on:
+  #      - kafka1
+  #      - restproxy
+  #    environment:
+  #      KAFKA_REST_PROXY_URL: restproxy:8086
+  #      PROXY: "true"
+  #    ports:
+  #      - 127.0.0.1:62457:8000
+  #    networks:
+  #      - kafka-chat
+  #
+  #  restproxy:
+  #    image: confluentinc/cp-kafka-rest:6.0.1
+  #    environment:
+  #      KAFKA_REST_HOST_NAME: restproxy
+  #      KAFKA_REST_BOOTSTRAP_SERVERS: kafka1:19093
+  #      KAFKA_REST_LISTENERS: http://0.0.0.0:8086
+  #    depends_on:
+  #      - kafka1
+  #    hostname: restproxy
+  #    container_name: restproxy
+  #    restart: unless-stopped
+  #    volumes:
+  #      - zookeeper1_data:/var/lib/zookeeper/data
+  #      - zookeeper1_log:/var/lib/zookeeper/log
+  #    networks:
+  #      - kafka-chat
+
+  zookeeper1:
+    image: confluentinc/cp-zookeeper:5.5.1
+    hostname: zookeeper1
+    container_name: zookeeper1
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 22181
+      ZOOKEEPER_TICK_TIME: 2000
+      ZOOKEEPER_INIT_LIMIT: 5
+      ZOOKEEPER_SYNC_LIMIT: 2
+      ZOOKEEPER_SERVERS: zookeeper1:22888:23888
+    restart: unless-stopped
+    ports:
+      - 22181:22181
+    volumes:
+      - zookeeper1_data:/var/lib/zookeeper/data
+      - zookeeper1_log:/var/lib/zookeeper/log
+    networks:
+      - kafka-chat
+
+  kafka1:
+    image: confluentinc/cp-kafka:5.5.1
+    hostname: kafka1
+    container_name: kafka1
+    depends_on:
+      - zookeeper1
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper1:22181
+      KAFKA_LISTENERS: LISTENER_LOCAL://:19092, LISTENER_DOCKER://kafka1:19093
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_LOCAL://localhost:19092, LISTENER_DOCKER://kafka1:19093
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_LOCAL:PLAINTEXT,LISTENER_DOCKER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER
+      KAFKA_CONFLUENT_SUPPORT_METRICS_ENABLE: "false"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_NUM_PARTITIONS: 1
+      KAFKA_JMX_PORT: 18888
+    restart: unless-stopped
+    ports:
+      - 127.0.0.1:19092:19092
+    volumes:
+      - kafka1_data:/var/lib/kafka/data
+    networks:
+      - kafka-chat
+
+volumes:
+  kafka1_data:
+  zookeeper1_data:
+  zookeeper1_log:
+
+networks:
+  kafka-chat:
