@@ -25,38 +25,6 @@ services:
     depends_on:
       - server
 
-  #  kafka-ui:
-  #    image: landoop/kafka-topics-ui:0.9.4
-  #    hostname: kafka-ui
-  #    container_name: kafka-ui
-  #    depends_on:
-  #      - kafka1
-  #      - restproxy
-  #    environment:
-  #      KAFKA_REST_PROXY_URL: restproxy:8086
-  #      PROXY: "true"
-  #    ports:
-  #      - 127.0.0.1:62457:8000
-  #    networks:
-  #      - kafka-chat
-  #
-  #  restproxy:
-  #    image: confluentinc/cp-kafka-rest:6.0.1
-  #    environment:
-  #      KAFKA_REST_HOST_NAME: restproxy
-  #      KAFKA_REST_BOOTSTRAP_SERVERS: kafka1:19093
-  #      KAFKA_REST_LISTENERS: http://0.0.0.0:8086
-  #    depends_on:
-  #      - kafka1
-  #    hostname: restproxy
-  #    container_name: restproxy
-  #    restart: unless-stopped
-  #    volumes:
-  #      - zookeeper1_data:/var/lib/zookeeper/data
-  #      - zookeeper1_log:/var/lib/zookeeper/log
-  #    networks:
-  #      - kafka-chat
-
   zookeeper1:
     image: confluentinc/cp-zookeeper:5.5.1
     hostname: zookeeper1
