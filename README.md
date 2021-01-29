@@ -2,9 +2,9 @@
 
 ## Technologies
 
-* Kafka is used for message streaming and storage.
-* Websocket is used for showing and sending messages without a reload need.
-* Asyncio is used for asynchronous usage of Kafka.
+* Kafka is used for message streaming and storage. Python library names are kafka-python and aiokafka(for asyncio integration)
+* Websocket is used for showing and sending messages without a reload need. (websockets package)
+* Asyncio and aiokafka is used for asynchronous usage of Kafka.
 
 ## Running
 
