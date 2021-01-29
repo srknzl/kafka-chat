@@ -5,9 +5,10 @@
       <p>Real Time Kafka Chat</p>
       <p>Usage</p>
       <ul>
+        <li>Choose a username below. It is "Anonymous" as default</li>
         <li>Everyone's message appears in the same list below</li>
         <li>You can press enter(when input is focused) to send messages or press send button</li>
-        <li>Reload to try connecting again if the websocket is not ready</li>
+        <li>Reload to try connecting again if the websocket is not ready, or it is lost</li>
       </ul>
       <p>Technologies</p>
       <ul>
