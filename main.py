@@ -4,6 +4,8 @@ import os
 import logging as log
 import kafka
 import json
+from aiokafka import AIOKafkaConsumer
+
 from kafka.errors import NoBrokersAvailable
 from kafka.admin.new_topic import NewTopic
 import time
@@ -52,30 +54,24 @@ async def consumer_handler(websocket, path):
         await add_to_kafka(message)
 
 
-async def get_messages(websocket, consumer):
-    for message in consumer:
-        await websocket.send(json.dumps(message.value))
-
-
 async def producer_handler(websocket, path):
     try:
-        consumer = kafka.KafkaConsumer(group_id=None,
-                                       bootstrap_servers=KAFKA_BROKERS,
-                                       value_deserializer=lambda x: json.loads(x.decode('utf-8')),
-                                       consumer_timeout_ms=1000000, auto_offset_reset='earliest',
-                                       max_poll_interval_ms=2147483647)
+        consumer: AIOKafkaConsumer = AIOKafkaConsumer(KAFKA_TOPIC, loop=asyncio.get_event_loop(),
+                                                      group_id=None,
+                                                      bootstrap_servers=KAFKA_BROKERS,
+                                                      value_deserializer=lambda x: json.loads(x.decode('utf-8')),
+                                                      consumer_timeout_ms=1000000, auto_offset_reset='earliest',
+                                                      max_poll_interval_ms=2147483647)
+
         log.warning("consumer created")
-        assignments = []
-        partitions = consumer.partitions_for_topic(KAFKA_TOPIC)
-        for p in partitions:
-            assignments.append(kafka.TopicPartition(KAFKA_TOPIC, p))
-        consumer.assign(assignments)
-
-        consumer.seek_to_beginning()
-
-        await asyncio.sleep(3)
-        await websocket.send("asdsd")
-
+        await consumer.start()
+        await consumer.seek_to_beginning()
+        try:
+            async for message in consumer:
+                await websocket.send(json.dumps(message.value))
+        finally:
+            # Will leave consumer group; perform autocommit if enabled.
+            await consumer.stop()
     except NoBrokersAvailable as e:
         log.exception("No brokers available.", exc_info=e)
     except Exception as e:
