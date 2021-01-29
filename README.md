@@ -1,10 +1,5 @@
 # Real Time Kafka Chat
 
-## Usage
-
-* Everyone's message appears in the same list below
-* You can press enter(when input is focused) to send messages or press send button
-
 ## Technologies
 
 * Kafka is used for message streaming and storage.
