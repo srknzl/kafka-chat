@@ -15,7 +15,8 @@
 
 * Install docker and docker-compose
 * Run `docker-compose up -d` in root folder
-* Go to localhost:8080 using more than one browser to test
+* Go to localhost:8080 
+* You can use more than one browser to test, or multiple tabs in a single browser
 
 ## SS
 ![](1.png)
