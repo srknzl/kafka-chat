@@ -17,3 +17,5 @@
 * Run `docker-compose up -d` in root folder
 * Go to localhost:8080 using more than one browser to test
 
+## SS
+![](1.png)
