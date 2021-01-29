@@ -101,6 +101,7 @@ export default {
           message: this.username + " : " + this.userInput,
           timestamp: new Date().getTime()
         }));
+        this.userInput = "";
       }
 
     }
