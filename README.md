@@ -14,5 +14,5 @@
 * You can use more than one browser to test, or multiple tabs in a single browser
 * Keep in mind that it can take 30 seconds for kafka and websocket server to start.
 
-## SS
-![](1.png)
+## Demo
+![](chat.gif)
